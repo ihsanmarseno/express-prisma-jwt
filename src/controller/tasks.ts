@@ -90,10 +90,13 @@ export const getTasks = async (req: Request, res: Response) => {
       });
     }
 
+    const { user_id, ...rest } = tasks[0]
+
+
     res.status(200).json({
       message: "Tasks retrieved successfully",
       data: {
-        tasks,
+        rest,
       },
     });
   } catch (error) {
