@@ -90,14 +90,11 @@ export const getTasks = async (req: Request, res: Response) => {
       });
     }
 
-    const { user_id, ...rest } = tasks[0]
-
+    const { user_id, ...data } = tasks[0];
 
     res.status(200).json({
       message: "Tasks retrieved successfully",
-      data: {
-        rest,
-      },
+      data,
     });
   } catch (error) {
     res.status(500).json({
@@ -147,32 +144,31 @@ export const updateTaskById = async (req: Request, res: Response) => {
 };
 
 export const updateStatusById = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { status } = req.body;
-  
-    if (!id || !status) {
-      return res.status(400).json({
-        message: "Please provide task_id or status",
-      });
-    }
-  
-    try {
-      const task = await prisma.tasks.update({
-        where: {
-          task_id: Number(id),
-        },
-        data: {
-          status,
-        },
-      });
-  
-      res.json({
-        message: "Task status updated successfully",
-      });
-    } catch {
-      res.status(500).json({
-        message: "Internal server error",
-      });
-    }
+  const { id } = req.params;
+  const { status } = req.body;
 
-}
+  if (!id || !status) {
+    return res.status(400).json({
+      message: "Please provide task_id or status",
+    });
+  }
+
+  try {
+    const task = await prisma.tasks.update({
+      where: {
+        task_id: Number(id),
+      },
+      data: {
+        status,
+      },
+    });
+
+    res.json({
+      message: "Task status updated successfully",
+    });
+  } catch {
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
