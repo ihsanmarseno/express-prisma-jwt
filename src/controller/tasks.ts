@@ -90,11 +90,11 @@ export const getTasks = async (req: Request, res: Response) => {
       });
     }
 
-    const { user_id, ...data } = tasks[0];
+    const tasksWithoutUserId = tasks.map(({ user_id, ...data }) => data);
 
     res.status(200).json({
       message: "Tasks retrieved successfully",
-      data,
+      data: tasksWithoutUserId,
     });
   } catch (error) {
     res.status(500).json({
