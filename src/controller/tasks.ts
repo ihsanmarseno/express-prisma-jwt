@@ -45,15 +45,25 @@ export const createTask = async (req: Request, res: Response) => {
 
 export const deleteTask = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const userId = (req as any).payload?.user_id;
 
-  if (!id) {
-    return res.status(400).json({
-      message: "Please provide task_id",
-    });
-  }
-
+  // Mendapatkan informasi tugas dari database berdasarkan user_id
   try {
-    const task = await prisma.tasks.delete({
+    const task = await prisma.tasks.findUnique({
+      where: {
+        task_id: Number(id),
+      },
+    });
+
+    // Memeriksa apakah tugas ditemukan dan apakah pengguna adalah pemiliknya
+    if (!task || task.user_id !== userId) {
+      return res.status(403).json({
+        message: "You are not authorized to delete this task",
+      });
+    }
+
+    // Menghapus tugas jika pengguna adalah pemiliknya
+    await prisma.tasks.delete({
       where: {
         task_id: Number(id),
       },
@@ -113,15 +123,29 @@ export const updateTaskById = async (req: Request, res: Response) => {
   }
 
   const { title, description, due_date } = req.body;
+  const userId = (req as any).payload?.user_id;
 
   try {
+    const task = await prisma.tasks.findUnique({
+      where: {
+        task_id: Number(id),
+      },
+    });
+
+    // Memeriksa apakah tugas ditemukan dan apakah pengguna adalah pemiliknya
+    if (!task || task.user_id !== userId) {
+      return res.status(403).json({
+        message: "You are not authorized to update this task",
+      });
+    }
+
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours() + 7);
     const formattedDate = currentDate
       .toISOString()
       .slice(0, 16)
       .replace("T", " ");
-    const task = await prisma.tasks.update({
+    const updatedTask = await prisma.tasks.update({
       where: {
         task_id: Number(id),
       },
@@ -135,6 +159,7 @@ export const updateTaskById = async (req: Request, res: Response) => {
 
     res.json({
       message: "Task updated successfully",
+      updatedTask,
     });
   } catch (error) {
     res.status(500).json({
@@ -146,6 +171,7 @@ export const updateTaskById = async (req: Request, res: Response) => {
 export const updateStatusById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status } = req.body;
+  const userId = (req as any).payload?.user_id;
 
   if (!id || !status) {
     return res.status(400).json({
@@ -154,7 +180,20 @@ export const updateStatusById = async (req: Request, res: Response) => {
   }
 
   try {
-    const task = await prisma.tasks.update({
+    const task = await prisma.tasks.findUnique({
+      where: {
+        task_id: Number(id),
+      },
+    });
+
+    // Memeriksa apakah tugas ditemukan dan apakah pengguna adalah pemiliknya
+    if (!task || task.user_id !== userId) {
+      return res.status(403).json({
+        message: "You are not authorized to update the status of this task",
+      });
+    }
+
+    const updatedTask = await prisma.tasks.update({
       where: {
         task_id: Number(id),
       },
@@ -165,8 +204,9 @@ export const updateStatusById = async (req: Request, res: Response) => {
 
     res.json({
       message: "Task status updated successfully",
+      updatedTask,
     });
-  } catch {
+  } catch (error) {
     res.status(500).json({
       message: "Internal server error",
     });
