@@ -98,14 +98,7 @@
         "description": "Create a new task. Requires Authorization.",
         "summary": "Create task with some data",
         "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Task"
-              }
-            }
-          }
+          "required": true
         },
         "responses": {
           "201": {
