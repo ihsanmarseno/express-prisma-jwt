@@ -13,7 +13,6 @@
       "url": "http://localhost:5000"
     }
   ],
-
   "paths": {
     "/auth/login": {
       "post": {
@@ -98,7 +97,29 @@
         "description": "Create a new task. Requires Authorization.",
         "summary": "Create task with some data",
         "requestBody": {
-          "required": true
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Task 1"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Grammar"
+                  },
+                  "due_date": {
+                    "type": "string",
+                    "example": "2023-12-20 19:28"
+                  }
+                },
+                "required": ["title", "description", "due_date"]
+              }
+            }
+          }
         },
         "responses": {
           "201": {
@@ -190,17 +211,28 @@
           {
             "name": "id",
             "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "required": true
           },
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Task"
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "example": "Task 1"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Grammar"
+                },
+                "due_date": {
+                  "type": "string",
+                  "example": "2023-12-20 19:28"
+                }
+              }
             }
           }
         ],
