@@ -9,7 +9,7 @@ import swaggerDocument from "./swagger.json";
 const app = express();
 const PORT = 5000;
 const CSS_URL =
-  "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
+  "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.6.0/swagger-ui.min.css";
 
 updateTaskStatus();
 
