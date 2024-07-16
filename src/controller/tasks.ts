@@ -113,6 +113,42 @@ export const getTasks = async (req: Request, res: Response) => {
   }
 };
 
+export const getTaskById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({
+      message: "Please provide task_id",
+    });
+  }
+
+  const userId = (req as any).payload?.user_id;
+
+  try {
+    const task = await prisma.tasks.findUnique({
+      where: {
+        task_id: Number(id),
+      },
+    });
+
+    // Memeriksa apakah tugas ditemukan dan apakah pengguna adalah pemiliknya
+    if (!task || task.user_id !== userId) {
+      return res.status(403).json({
+        message: "You are not authorized to view this task",
+      });
+    }
+
+    res.status(200).json({
+      message: "Task retrieved successfully",
+      data: task,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
 export const updateTaskById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
