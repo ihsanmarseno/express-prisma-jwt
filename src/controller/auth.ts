@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 const prisma = new PrismaClient();
 
@@ -30,11 +30,13 @@ export const register = async (req: Request, res: Response) => {
   res.status(200).json({
     message: "Login successful",
     token,
+    name: user.username,
+    email: user.email,
   });
 };
 
 export const login = async (req: Request, res: Response) => {
-    const { username, email, password } = req.body;
+  const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
     return res.status(400).json({
@@ -60,6 +62,8 @@ export const login = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
